@@ -1,0 +1,5 @@
+{
+  "name": "SafetyFirst MVP",
+  "description": "Eine schlanke PWA für digitale Sicherheitsunterweisungen in Handwerk und Industrie. Mobile-first, ohne Login-Hürden.",
+  "requestFramePermissions": []
+}
