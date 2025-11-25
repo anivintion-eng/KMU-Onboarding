@@ -11,20 +11,37 @@ export const fallbackContent: SafetyContent = {
     "Halte Fluchtwege und Notausgänge stets frei.",
     "Melde Beschädigungen an Werkzeugen sofort deinem Vorgesetzten."
   ],
-  duration: "60 Sekunden"
+  duration: "60 Sekunden",
+  quiz: [
+    {
+      question: "Was musst du bei der Arbeit immer tragen?",
+      options: ["Sonnenbrille", "Persönliche Schutzausrüstung (PSA)", "Kopfhörer"],
+      correctIndex: 1
+    },
+    {
+      question: "Was machst du bei einem defekten Werkzeug?",
+      options: ["Weiterbenutzen", "Selbst reparieren", "Sofort melden"],
+      correctIndex: 2
+    },
+    {
+      question: "Dürfen Notausgänge zugestellt werden?",
+      options: ["Ja, kurzzeitig", "Nein, niemals", "Nur im Winter"],
+      correctIndex: 1
+    }
+  ]
 };
 
 export async function generateSafetyBriefing(role: string, department: string): Promise<SafetyContent> {
   try {
     const model = "gemini-2.5-flash";
-    const prompt = `Erstelle eine ultra-kurze Sicherheitsunterweisung für einen Mitarbeiter als ${role} im Bereich ${department}.
-    Zielgruppe: Einfache Sprache, keine Fachbegriffe, direkt anwendbar.
+    const prompt = `Erstelle eine kurze Sicherheitsunterweisung für einen Mitarbeiter als ${role} im Bereich ${department}.
     
     Format:
     - Ein motivierender Titel
     - Ein kurzer Einleitungssatz (max 15 Wörter)
-    - Genau 3 konkrete, lebenswichtige Sicherheitsregeln (kurz und knackig)
-    - Geschätzte Lesezeit (z.B. "45 Sekunden")
+    - Genau 3 konkrete, lebenswichtige Sicherheitsregeln.
+    - Geschätzte Lesezeit.
+    - Erstelle dazu genau 3 einfache Multiple-Choice Fragen (Quiz), um das Verständnis zu prüfen. Jede Frage soll 3 Antwortmöglichkeiten haben, wovon nur eine richtig ist.
     
     Antworte im JSON Format.`;
 
@@ -42,9 +59,24 @@ export async function generateSafetyBriefing(role: string, department: string): 
               type: Type.ARRAY,
               items: { type: Type.STRING }
             },
-            duration: { type: Type.STRING }
+            duration: { type: Type.STRING },
+            quiz: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  question: { type: Type.STRING },
+                  options: { 
+                    type: Type.ARRAY, 
+                    items: { type: Type.STRING } 
+                  },
+                  correctIndex: { type: Type.INTEGER, description: "Index of the correct option (0, 1, or 2)" }
+                },
+                required: ["question", "options", "correctIndex"]
+              }
+            }
           },
-          required: ["title", "intro", "steps", "duration"]
+          required: ["title", "intro", "steps", "duration", "quiz"]
         }
       }
     });

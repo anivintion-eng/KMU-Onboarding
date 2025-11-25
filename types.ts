@@ -4,11 +4,18 @@ export enum EmployeeStatus {
   EXPIRED = 'EXPIRED'
 }
 
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctIndex: number;
+}
+
 export interface SafetyContent {
   title: string;
   intro: string;
   steps: string[];
   duration: string;
+  quiz: QuizQuestion[];
 }
 
 export interface Employee {
